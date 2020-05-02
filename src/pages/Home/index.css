@@ -1,0 +1,14 @@
+/* home 样式 */
+.home .iconfont{
+    font-size: 20px;
+  }
+  
+  /* tabbar 盒子 定位去底部 */
+  /* 有时候框架 改的比较多  自己写还快点 */
+  .am-tab-bar{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+  }
