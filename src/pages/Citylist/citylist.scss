@@ -7,5 +7,42 @@
     z-index: 10;
 }
 .citylist{
+    height: 100%;//用于autosizer计算宽高
     padding-top: 45px; //预留顶部距离
+
+    .city{
+        background-color: #fff;
+        .title{
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #999;
+        }
+        .name{
+            height: 50px;
+            line-height: 50px;
+            padding: 0 15px;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+    }
+    .city-right{
+        position: fixed;
+        top: 50px;
+        right: 10px;
+        li{
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+            border-radius: 50%;
+        }
+        .active{
+            background-color: #21b97a;
+            color: #fff;
+        }
+    }
+
 }

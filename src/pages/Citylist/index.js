@@ -1,35 +1,77 @@
 // citylist 组件
 import React, { Component } from "react";
-import { NavBar, Icon } from "antd-mobile";
+import { NavBar, Icon, Toast } from "antd-mobile";
 import axios from "axios";
 import "./citylist.scss";
 import { getCurrentCity } from "../../utils/currentCity";
 // 导入可视区域渲染
-import { List } from "react-virtualized";
+import { List, AutoSizer } from "react-virtualized";
 
 export default class Home extends Component {
- 
   state = {
     citylist: {}, //左侧城市数据
     cityIndex: [], //右侧字母数据
+    activeIndex: 0, //选中状态
   };
+  // 通过ref 获取 List组件dom
+  listRef = React.createRef();
   componentDidMount() {
-    
     this.getCitylist();
   }
-  // ------
+  // ------城市渲染----------
   rowRenderer = ({
-    key, // Unique key within array of rows
-    index, // Index of row within collection
-    isScrolling, // The List is currently being scrolled
-    isVisible, // This row is visible within the List (eg it is not an overscanned row)
-    style, // Style object to be applied to row (to position it)
+    key, // 唯一key
+    index, //索引 每一条数据的索引
+    isScrolling, //是否正在滚动 true正在滚动  false 没有滚动
+    isVisible, // 是否可见 true看见了
+    style, // style 每行div的 行内样式 他是组件控制的 我们必须写
   }) => {
+    // 1.通过索引获取单词
+    let word = this.state.cityIndex[index];
+    // 2.通过单词获取城市
+    let citys = this.state.citylist[word];
     return (
-      <div key={key} style={style}>
-        {this.state.cityIndex[index]}------hahhhahha
+      // 每一个单词城市
+      <div className="city" key={key} style={style}>
+        {/* 单词 */}
+        <div className="title">{this.formatWord(word)}</div>
+        {/* 城市 */}
+
+        {citys.map((item) => {
+          return (
+            <div
+              key={item.value}
+              className="name"
+              onClick={() => {
+                // 点击切换城市 只可 北上广深
+                let arr = ["北京", "上海", "广州", "深圳"];
+                if (arr.indexOf(item.label) !== -1) {
+                  // 切换定位城市 跳转回主页
+                  localStorage.setItem("current-city", JSON.stringify(item));
+                  this.props.history.push("/home/default");
+                } else {
+                  // antd-mobile 自带
+                  Toast.info("该城市暂无房源~~~", 1);
+                }
+              }}
+            >
+              {item.label}
+            </div>
+          );
+        })}
       </div>
     );
+  };
+  // 格式化单词
+  formatWord = (word) => {
+    switch (word) {
+      case "#":
+        return "当前定位";
+      case "hot":
+        return "热门城市";
+      default:
+        return word.toUpperCase();
+    }
   };
   //   获取全部城市数据
   async getCitylist() {
@@ -39,7 +81,7 @@ export default class Home extends Component {
     // console.log(res.data.body);
     //1.拿到的 并非想要的数据格式 需要加工处理
     let { citylist, cityIndex } = this.formatCity(res.data.body);
-    console.log(citylist, cityIndex);
+    // console.log(citylist, cityIndex);
     // 2.添加热门城市
     let resHot = await axios.get("http://api-haoke-dev.itheima.net/area/hot");
     citylist["hot"] = resHot.data.body;
@@ -80,6 +122,53 @@ export default class Home extends Component {
       cityIndex,
     };
   }
+  //计算高度 自带参数格式 {index：number} return number
+  getHeight = ({ index }) => {
+    // console.log(index);
+    // 1.通过索引获取单词
+    let word = this.state.cityIndex[index];
+    // 2.通过单词获取城市
+    let citys = this.state.citylist[word];
+    return 36 + citys.length * 50;
+  };
+  // 循环右侧列表
+  cityRight = () => {
+    return this.state.cityIndex.map((item, index) => {
+      return (
+        <li
+          key={index}
+          className={this.state.activeIndex === index ? "active" : ""}
+          onClick={() => {
+            // 通过ref 获取 List组件dom
+            // 通过list组件的 scrollToRow() 方法实现切换
+            console.log(this.listRef.current);
+            // 默认滚动底部对齐 要设置顶部对齐
+            this.listRef.current.scrollToRow(index);
+          }}
+        >
+          {item === "hot" ? "热" : item.toUpperCase()}
+        </li>
+      );
+    });
+  };
+  // 左侧滚动执行的函数  参数为一个对象
+  // ({ overscanStartIndex: number,
+  // overscanStopIndex: number,
+  // startIndex: number, stopIndex: number }): void
+  onRowsRendered = ({
+    overscanStartIndex, //预渲染开始
+    overscanStopIndex, //预渲染结束
+    startIndex, //可视单词顶部索引
+    stopIndex, //可视单词底部索引
+  }) => {
+    // 优化重复索引时 不需要修改
+    console.log("顶部单词队形的索引", startIndex);
+    if (this.state.activeIndex !== startIndex) {
+      this.setState({
+        activeIndex: startIndex,
+      });
+    }
+  };
   render() {
     return (
       <div className="citylist">
@@ -95,15 +184,24 @@ export default class Home extends Component {
           城市列表
         </NavBar>
         {/* 内容 */}
-        <div className="content">
-          <List
-            width={300}
-            height={600}
-            rowCount={this.state.cityIndex.length}
-            rowHeight={100}
-            rowRenderer={this.rowRenderer}
-          />
-        </div>
+
+        {/* AutoSizer动态计算占满剩余屏幕宽高 height，width */}
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              ref={this.listRef}
+              scrollToAlignment="start" //滚动顶部对齐
+              width={width}
+              height={height}
+              rowCount={this.state.cityIndex.length} //总条数
+              rowHeight={this.getHeight} //动态计算高度 可传数据和函数
+              rowRenderer={this.rowRenderer} //每条数据渲染的函数
+              onRowsRendered={this.onRowsRendered} //当列表滚动式执行的函数
+            />
+          )}
+        </AutoSizer>
+        {/* 右侧列表 */}
+        <ul className="city-right">{this.cityRight()}</ul>
       </div>
     );
   }
