@@ -1,5 +1,6 @@
 // 地图组件
 import React, { Component } from "react";
+import NavHeader from '../../components/NavHeader'
 // 导入样式
 import "./map.scss";
 // 1 当你引入 百度地图的js 后 就天生 有 BMap还有很多 地图的函数
@@ -23,6 +24,9 @@ export default class Map extends Component {
     return (
       <div className="map">
         {/* 我是map组件 */}
+        <NavHeader>
+            地图找房
+        </NavHeader>
         <div id="container"></div>
       </div>
     );

@@ -1,12 +1,12 @@
 // citylist 组件
 import React, { Component } from "react";
-import { NavBar, Icon, Toast } from "antd-mobile";
+import { Toast } from "antd-mobile";
 import axios from "axios";
 import "./citylist.scss";
 import { getCurrentCity } from "../../utils/currentCity";
 // 导入可视区域渲染
 import { List, AutoSizer } from "react-virtualized";
-
+import NavHeader from '../../components/NavHeader'
 export default class Home extends Component {
   state = {
     citylist: {}, //左侧城市数据
@@ -172,17 +172,9 @@ export default class Home extends Component {
   render() {
     return (
       <div className="citylist">
-        <NavBar
-          className="navbar"
-          mode="light"
-          icon={<Icon type="left" />}
-          onLeftClick={() => {
-            console.log(this.props.history);
-            this.props.history.goBack();
-          }}
-        >
-          城市列表
-        </NavBar>
+        <NavHeader>
+            城市列表
+        </NavHeader>
         {/* 内容 */}
 
         {/* AutoSizer动态计算占满剩余屏幕宽高 height，width */}
