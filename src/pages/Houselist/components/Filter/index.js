@@ -6,6 +6,7 @@ import FilterPicker from "../FilterPicker";
 import { API } from "../../../../utils/api";
 import { getCurrentCity } from "../../../../utils/currentCity";
 import styles from "./index.module.css";
+import FilterMore from "../FilterMore";
 const titleSelected = {
   area: false,
   mode: false,
@@ -49,18 +50,13 @@ export default class Filter extends Component {
     });
   };
   // 判断显示picker组件
-
-  randerPicker = () => {
+  renderPicker = () => {
     let {
       openType,
       filterList: {
         area,
-        roomType,
-        subway,
-        characteristic,
-        floor,
-        rentType,
-        oriented,
+        subway,   
+        rentType,   
         price,
       },
     } = this.state; //结构赋值
@@ -99,6 +95,29 @@ export default class Filter extends Component {
       return null;
     }
   };
+  // more组件
+  renderMore=()=>{
+    let{openType,filterList: {    
+      roomType,
+      characteristic,
+      floor,
+      oriented,
+    },}=this.state
+    let data ={roomType,
+      characteristic,
+      floor,
+      oriented,}
+    let defaultValue = this.state.selectedValus['more'] //当前选择的值
+    if(openType==='more'){
+      return <FilterMore 
+      data={data}
+      defaultValue={defaultValue}
+      onSave={this.onSave}//确定触发
+      />
+    }else{
+      return null
+    }
+  }
   // footer-->picker--->点击取消隐藏
   onCancel = () => {
     this.setState({
@@ -135,10 +154,10 @@ export default class Filter extends Component {
 
           {/* 前三个菜单对应的内容： */}
 
-          {this.randerPicker()}
+          {this.renderPicker()}
 
           {/* 最后一个菜单对应的内容： */}
-          {/* <FilterMore /> */}
+          {this.renderMore()}
         </div>
       </div>
     );
