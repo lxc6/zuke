@@ -17,7 +17,13 @@ export default class Filter extends Component {
     titleSelected: titleSelected,
     openType: "", //通过其判断picker组件是否显示
     filterList: [],
-    value:null
+    selectedValus: {
+      //存四个选择条件的默认值
+      area: ["area", "null"],
+      mode: ["null"],
+      price: ["null"],
+      more: [],
+    },
   };
   componentDidMount() {
     this.getFilter();
@@ -26,7 +32,7 @@ export default class Filter extends Component {
   getFilter = async () => {
     let city = await getCurrentCity(); //注意 await
     let res = await API.get("/houses/condition?id=" + city.value);
-    console.log(res.data.body);
+    // console.log(res.data.body);
     this.setState({
       filterList: res.data.body,
     });
@@ -61,6 +67,7 @@ export default class Filter extends Component {
     if (openType === "area" || openType === "mode" || openType === "price") {
       let data = []; //根据条件判断数据中包含的对象
       let cols = 0;
+      let defaultValue = this.state.selectedValus[openType] //当前选择的值
       switch (openType) {
         case "area":
           data = [area, subway];
@@ -80,8 +87,10 @@ export default class Filter extends Component {
       }
       return (
         <FilterPicker
+          key={openType}//通过key解决组件constructor只执行一次的bug
           data={data}
           cols={cols}
+          defaultValue={defaultValue}
           onCancel={this.onCancel} //取消隐藏
           onSave={this.onSave} //却定隐藏
         />
@@ -97,13 +106,19 @@ export default class Filter extends Component {
     });
   };
   // footer-->picker--->点击确定隐藏
-  onSave = (val) => {
+  onSave = (value) => {
+    //获取到的值存入selectedVlues
+    let type = this.state.openType;
     this.setState({
+      selectedValus: {
+        ...this.state.selectedValus, //展开复制
+        [type]: value,
+      },
       openType: "",
-      value:val
+    },
+    ()=>{
+      console.log(this.state.selectedValus);//执行完在打印不要直接打印
     });
-    console.log(val);
-    
   };
   render() {
     return (

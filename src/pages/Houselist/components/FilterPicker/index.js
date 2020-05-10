@@ -6,8 +6,14 @@ import FilterFooter from '../../../../components/FilterFooter'
 
 
 export default class FilterPicker extends Component {
-  state={
-    value:null //选择的值
+  // constructor(props){ //数据不变 组件不关闭 切换只执行一次 通过key 解决
+  //   super(props)
+  //   this.state={
+  //     value:this.props.defaultValue //当前(修改前)选择的值
+  //   }
+  // }
+  state={ //
+    value:this.props.defaultValue //当前(修改前)选择的值
   }
   render() {
     return (
@@ -15,7 +21,7 @@ export default class FilterPicker extends Component {
         {/* 选择器组件： */}
         <PickerView 
         data={this.props.data} //下拉数据
-        value={this.state.value} //选择的值
+        value={this.state.value} //再次打开选择的值
         cols={this.props.cols} //列数
         onChange={(val)=>{//切换选择值时会执行
           // console.log(val);
@@ -28,11 +34,8 @@ export default class FilterPicker extends Component {
         {/* 底部按钮 */}
         <FilterFooter 
         onCancel={this.props.onCancel}//取消隐藏
-        onSave={()=>{
-          console.log('点击确定时的props',this.props);
-          
+        onSave={()=>{ 
           this.props.onSave(this.state.value)
-          console.log('点击确定时的props2',this.props);
         }}//却定隐藏 并将value传给filter
         />
       </>
