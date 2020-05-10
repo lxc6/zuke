@@ -29,9 +29,10 @@ export default class FilterPicker extends Component {
         <FilterFooter 
         onCancel={this.props.onCancel}//取消隐藏
         onSave={()=>{
-          console.log(this.props);
+          console.log('点击确定时的props',this.props);
           
           this.props.onSave(this.state.value)
+          console.log('点击确定时的props2',this.props);
         }}//却定隐藏 并将value传给filter
         />
       </>
