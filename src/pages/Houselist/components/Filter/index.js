@@ -16,7 +16,7 @@ const titleSelected = {
 export default class Filter extends Component {
   state = {
     titleSelected: titleSelected,
-    openType: "", //通过其判断picker组件是否显示
+    openType: "", //通过其判断picker，more组件是否显示
     filterList: [],
     selectedValus: {
       //存四个选择条件的默认值
@@ -53,17 +53,12 @@ export default class Filter extends Component {
   renderPicker = () => {
     let {
       openType,
-      filterList: {
-        area,
-        subway,   
-        rentType,   
-        price,
-      },
+      filterList: { area, subway, rentType, price },
     } = this.state; //结构赋值
     if (openType === "area" || openType === "mode" || openType === "price") {
       let data = []; //根据条件判断数据中包含的对象
       let cols = 0;
-      let defaultValue = this.state.selectedValus[openType] //当前选择的值
+      let defaultValue = this.state.selectedValus[openType]; //当前选择的值
       switch (openType) {
         case "area":
           data = [area, subway];
@@ -83,7 +78,7 @@ export default class Filter extends Component {
       }
       return (
         <FilterPicker
-          key={openType}//通过key解决组件constructor只执行一次的bug
+          key={openType} //通过key解决组件constructor只执行一次的bug
           data={data}
           cols={cols}
           defaultValue={defaultValue}
@@ -96,28 +91,25 @@ export default class Filter extends Component {
     }
   };
   // more组件
-  renderMore=()=>{
-    let{openType,filterList: {    
-      roomType,
-      characteristic,
-      floor,
-      oriented,
-    },}=this.state
-    let data ={roomType,
-      characteristic,
-      floor,
-      oriented,}
-    let defaultValue = this.state.selectedValus['more'] //当前选择的值
-    if(openType==='more'){
-      return <FilterMore 
-      data={data}
-      defaultValue={defaultValue}
-      onSave={this.onSave}//确定触发
-      />
-    }else{
-      return null
+  renderMore = () => {
+    let {
+      openType,
+      filterList: { roomType, characteristic, floor, oriented },
+    } = this.state;
+    let data = { roomType, characteristic, floor, oriented };
+    let defaultValue = this.state.selectedValus["more"]; //当前选择的值
+    if (openType === "more") {
+      return (
+        <FilterMore
+          data={data}
+          defaultValue={defaultValue}
+          onSave={this.onSave} //确定触发
+        />
+      );
+    } else {
+      return null;
     }
-  }
+  };
   // footer-->picker--->点击取消隐藏
   onCancel = () => {
     this.setState({
@@ -128,16 +120,46 @@ export default class Filter extends Component {
   onSave = (value) => {
     //获取到的值存入selectedVlues
     let type = this.state.openType;
-    this.setState({
-      selectedValus: {
-        ...this.state.selectedValus, //展开复制
-        [type]: value,
+    this.setState(
+      {
+        selectedValus: {
+          ...this.state.selectedValus, //展开复制
+          [type]: value,
+        },
+        openType: "",
       },
-      openType: "",
-    },
-    ()=>{
-      console.log(this.state.selectedValus);//执行完在打印不要直接打印
-    });
+      () => {
+        console.log(this.state.selectedValus); //setState第二参数实现 最新数据
+        // 处理数据格式 并传给houselist 进行发送请求
+        // 得到的格式
+        // {
+        //   area: (3)[
+        //     ("area", "AREA|e716d8e3-fd5b-88bb", "AREA|ef8f445a-dfd6-eecd")
+        //   ];
+        //   mode: ["null"];
+        //   price: ["null"];
+        //   more: [];
+        // }
+        // 需求的格式
+        // { area:'AREA|67fad918-fe-123' , 或者 subwar:'subway|67fad918-fe-123'
+        //  mode:'true',//或者'null' 或者'false'
+        //  price:'PRICE|2000',
+        //  more:'ROOM|d4a692e4-a177-37fd,FLOOR|2' }
+        let filter = {};
+        let { area, mode, price, more } = this.state.selectedValus;
+        let areaName = area[0];//键
+        let areaValue = "null";//值
+        if (area.length === 3) {
+          areaValue = area[2] !== "null" ? area[2] : area[1];//判断area 的value值
+        }
+        filter[areaName] = areaValue
+        filter.mode = mode[0];
+        filter.price = price[0];
+        filter.more = more.join(",");
+        // 子传父
+        this.props.getFilter(filter)
+      }
+    );
   };
   render() {
     return (

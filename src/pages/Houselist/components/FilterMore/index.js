@@ -73,7 +73,7 @@ export default class FilterMore extends Component {
           onCancel={//单独清空处理
             ()=>{       
               this.setState({
-                selectedValue:[]
+                selectedValue:[]//清空数据
               })
             }
           }
