@@ -1,12 +1,13 @@
 // citylist 组件
 import React, { Component } from "react";
 import { Toast } from "antd-mobile";
-import axios from "axios";
+// import axios from "axios";
+import { API } from "../../utils/api";
 import "./citylist.scss";
 import { getCurrentCity } from "../../utils/currentCity";
 // 导入可视区域渲染
 import { List, AutoSizer } from "react-virtualized";
-import NavHeader from '../../components/NavHeader'
+import NavHeader from "../../components/NavHeader";
 export default class Home extends Component {
   state = {
     citylist: {}, //左侧城市数据
@@ -48,7 +49,7 @@ export default class Home extends Component {
                 if (arr.indexOf(item.label) !== -1) {
                   // 切换定位城市 跳转回主页
                   localStorage.setItem("current-city", JSON.stringify(item));
-                  this.props.history.push("/home/default");
+                  this.props.history.go(-1);
                 } else {
                   // antd-mobile 自带
                   Toast.info("该城市暂无房源~~~", 1);
@@ -75,15 +76,13 @@ export default class Home extends Component {
   };
   //   获取全部城市数据
   async getCitylist() {
-    let res = await axios.get(
-      "http://api-haoke-dev.itheima.net/area/city?level=1"
-    );
+    let res = await API.get("/area/city?level=1");
     // console.log(res.data.body);
     //1.拿到的 并非想要的数据格式 需要加工处理
     let { citylist, cityIndex } = this.formatCity(res.data.body);
     // console.log(citylist, cityIndex);
     // 2.添加热门城市
-    let resHot = await axios.get("http://api-haoke-dev.itheima.net/area/hot");
+    let resHot = await API.get("/area/hot");
     citylist["hot"] = resHot.data.body;
     cityIndex.unshift("hot");
     // 3.定位城市 返回的promise 通过await获取resolve
@@ -172,9 +171,7 @@ export default class Home extends Component {
   render() {
     return (
       <div className="citylist">
-        <NavHeader>
-            城市列表
-        </NavHeader>
+        <NavHeader>城市列表</NavHeader>
         {/* 内容 */}
 
         {/* AutoSizer动态计算占满剩余屏幕宽高 height，width */}

@@ -3,7 +3,8 @@ import React, { Component } from "react";
 // 轮播组件
 import { Carousel, Grid, Flex } from "antd-mobile";
 // axios
-import axios from "axios";
+// import axios from "axios";
+import {API} from '../../utils/api'
 // 导入样式
 import "./index.scss";
 // 导入图片
@@ -20,6 +21,7 @@ let navs = [
   { title: "出去租", imgSrc: nav4, path: "/rent/add" },
 ];
 
+let baseurl = 'http://api-haoke-dev.itheima.net'
 export default class Default extends Component {
   state = {
     swiperData: [],
@@ -41,23 +43,13 @@ export default class Default extends Component {
     this.setState({
       cityname:city.label
     })
-    // 获取用户ip确定地图位置  
-    //使用百度 定位当前城市--ip定位  BMap.LocalCity 
-    // var myCity = new window.BMap.LocalCity();
-    // // 里面就是 回调函数
-    // myCity.get((result) => {
-    //   var cityName = result.name;
-    //   console.log(result);
-    //   // alert("当前定位城市:"+cityName);// 北京市  定位的当前城市 在哪打开网站就是哪
-    //   // 赋值
-    //   this.setState({
-    //     cityname: cityName,
-    //   });
-    // });
+    
   }
   //   请求轮播数据
   async getSwiper() {
-    let res = await axios("http://api-haoke-dev.itheima.net/home/swiper");
+    // let res = await axios("http://api-haoke-dev.itheima.net/home/swiper");
+    let res = await API.get("/home/swiper");
+
     // this.setState是异步操作 不能保证 isplay有数据
     // 需要用到setState的第二参数 保证数据isplay是最新的
     this.setState(
@@ -74,9 +66,7 @@ export default class Default extends Component {
   }
   //发送请求 获取 租房小组数据
   async getGroups() {
-    let res = await axios.get(
-      "http://api-haoke-dev.itheima.net/home/groups?area=AREA%7C88cff55c-aaa4-e2e0"
-    );
+    let res = await API.get("/home/groups?area=AREA%7C88cff55c-aaa4-e2e0");
     console.log("租房小组", res);
     if (res.data.status === 200) {
       // 成功就赋值
@@ -86,10 +76,8 @@ export default class Default extends Component {
     }
   }
   // 发送请求 获取 最新资讯数据
-  async getNews() {
-    let res = await axios.get(
-      "http://api-haoke-dev.itheima.net/home/news?area=AREA%7C88cff55c-aaa4-e2e0"
-    );
+  async getNews() {   
+    let res = await API.get("/home/news?area=AREA%7C88cff55c-aaa4-e2e0");
     console.log("最新资讯", res);
     // 赋值
     this.setState({
@@ -109,7 +97,7 @@ export default class Default extends Component {
         }}
       >
         <img
-          src={"http://api-haoke-dev.itheima.net" + item.imgSrc}
+          src={baseurl + item.imgSrc}
           alt=""
           style={{ width: "100%", verticalAlign: "top" }}
           onLoad={() => {
@@ -146,7 +134,7 @@ export default class Default extends Component {
         <li key={item.id}>
           <div className="imgBox">
             <img
-              src={`http://api-haoke-dev.itheima.net${item.imgSrc}`}
+              src={baseurl+item.imgSrc}
               alt=""
             />
           </div>
@@ -227,7 +215,7 @@ export default class Default extends Component {
                   <p>{item.desc}</p>
                 </div>
                 <img
-                  src={`http://api-haoke-dev.itheima.net${item.imgSrc}`}
+                  src={baseurl+item.imgSrc}
                   alt=""
                 />
               </div>

@@ -2,7 +2,8 @@
 import React, { Component } from "react";
 import NavHeader from "../../components/NavHeader";
 import { getCurrentCity } from "../../utils/currentCity";
-import axios from "axios";
+// import axios from "axios";
+import {API} from '../../utils/api'
 import{ Toast } from 'antd-mobile'
 // 导入局部样式
 import "./map.scss";
@@ -59,8 +60,8 @@ export default class Map extends Component {
   // 循环生成覆盖物  type参数判断圆形与矩形
   renderOverlays = async (id, type) => {
     Toast.loading('加载中---',0)
-    let res = await axios.get(
-      "http://api-haoke-dev.itheima.net/area/map?id=" + id
+    let res = await API.get(
+      "/area/map?id=" + id
     );
     Toast.hide()
     console.log(res);
@@ -140,9 +141,9 @@ export default class Map extends Component {
   };
   getHouselist = async (id) => {
     Toast.loading('加载中---',0)
-    let res = await axios.get(
+    let res = await API.get(
       //获取房屋列表
-      "http://api-haoke-dev.itheima.net/houses?cityId=" + id
+      "/houses?cityId=" + id
     );
     Toast.hide()
     console.log("房子列表总数", res.data.body.count);

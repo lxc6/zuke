@@ -33,23 +33,37 @@ const tabItems = [
 ];
 export default class Home extends Component {
   state = {
-    selectedTab: "/home/default",
+    selectedTab: this.props.location.pathname,
     hidden: false, // 是否隐藏
   };
+  // 在组件的更新阶段，获取到当前最新的 pathname ，然后，更新状态 selectedTab
+  componentDidUpdate(prevProps) {
+    console.log("最新状态 this.props：", this.props);
+    console.log("更新前的props prevProps：", prevProps);
+    const pathName = this.props.location.pathname;
+    const prevPathName = prevProps.location.pathname;
+    // 对比更新前后的两个 pathname ，只有在不同的情况下，更新状态即可
+    if (pathName !== prevPathName) {
+      this.setState({
+        // 更新为当前路由的最新值
+        selectedTab: pathName,
+      });
+    }
+  }
   renderItem() {
     return tabItems.map((item, index) => {
       return (
         <TabBar.Item
-          key={index}//key必须
+          key={index} //key必须
           title={item.title} // 文字
           icon={<i className={`iconfont ${item.icon}`}></i>} //默认图标
           selectedIcon={<i className={`iconfont ${item.icon}`}></i>} //选中图标
           selected={this.state.selectedTab === item.path} //控制当前点击的高亮 true高亮 false不高亮
           onPress={() => {
             // 点击修改数据 切换单词 控制高亮 成一个 有意义的单词
-            this.setState({
-              selectedTab: item.path,
-            });
+            // this.setState({
+            //   selectedTab: item.path,
+            // });
             // 点击跳转
             this.props.history.push(item.path);
           }}
