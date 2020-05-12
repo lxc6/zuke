@@ -90,6 +90,15 @@ export default class Filter extends Component {
       return null;
     }
   };
+  // picker遮罩层
+  renderMask = () => {
+    let { openType } = this.state;
+    if (openType === "area" || openType === "mode" || openType === "price") {
+      return <div className={styles.mask} />;
+    } else {
+      return null;
+    }
+  };
   // more组件
   renderMore = () => {
     let {
@@ -147,17 +156,17 @@ export default class Filter extends Component {
         //  more:'ROOM|d4a692e4-a177-37fd,FLOOR|2' }
         let filter = {};
         let { area, mode, price, more } = this.state.selectedValus;
-        let areaName = area[0];//键
-        let areaValue = "null";//值
+        let areaName = area[0]; //键
+        let areaValue = "null"; //值
         if (area.length === 3) {
-          areaValue = area[2] !== "null" ? area[2] : area[1];//判断area 的value值
+          areaValue = area[2] !== "null" ? area[2] : area[1]; //判断area 的value值
         }
-        filter[areaName] = areaValue
+        filter[areaName] = areaValue;
         filter.mode = mode[0];
         filter.price = price[0];
         filter.more = more.join(",");
         // 子传父
-        this.props.getFilter(filter)
+        this.props.getFilter(filter);
       }
     );
   };
@@ -165,7 +174,7 @@ export default class Filter extends Component {
     return (
       <div className={styles.root}>
         {/* 前三个菜单的遮罩层 */}
-        {/* <div className={styles.mask} /> */}
+        {this.renderMask()}
 
         <div className={styles.content}>
           {/* 标题栏  传值判断选中*/}

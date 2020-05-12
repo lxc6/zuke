@@ -38,8 +38,8 @@ export default class Home extends Component {
   };
   // 在组件的更新阶段，获取到当前最新的 pathname ，然后，更新状态 selectedTab
   componentDidUpdate(prevProps) {
-    console.log("最新状态 this.props：", this.props);
-    console.log("更新前的props prevProps：", prevProps);
+    // console.log("最新状态 this.props：", this.props);
+    // console.log("更新前的props prevProps：", prevProps);
     const pathName = this.props.location.pathname;
     const prevPathName = prevProps.location.pathname;
     // 对比更新前后的两个 pathname ，只有在不同的情况下，更新状态即可
@@ -73,7 +73,7 @@ export default class Home extends Component {
   }
   render() {
     return (
-      <div>
+      <div className="home">
         {/* <h2>Home主页页面</h2> */}
         {/* 二级路由 */}
         <Route exact path="/home/default" component={Default}></Route>
