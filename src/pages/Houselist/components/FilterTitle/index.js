@@ -23,8 +23,10 @@ export default function FilterTitle(props) {
         let isSelected=titleSelected[item.type]
         return (
           <Flex.Item key={item.type}
-            onClick={()=>{
+            onClick={(e)=>{
               changeLight(item.type)
+              // console.log(e,e.screenY,e.clientY,e.pageY);
+              
             }}
           >
             {/* 选中类名： selected  styles.selected*/}

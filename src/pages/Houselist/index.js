@@ -63,41 +63,6 @@ export default class Houselist extends Component {
       }
     );
   };
-  // 渲染房屋列表
-  // renderHouselist=()=>{
-  //   console.log(this.state.list);
-  //   return this.state.list.map((item)=>{
-  //     return <div key={item.houseCode} className={styles.house}>
-  //     <div className={styles.imgWrap}>
-  //       <img
-  //         className={styles.img}
-  //         src={`http://api-haoke-dev.itheima.net${item.houseImg}`}
-  //         alt=""
-  //       />
-  //     </div>
-  //     <div className={styles.content}>
-  //       <h3 className={styles.title}>{item.title}</h3>
-  //       <div className={styles.desc}>{item.desc}</div>
-  //       <div>
-  //         {/* ['近地铁', '随时看房'] */}
-  //         {item.tags.map((v, i) => {
-  //           return (
-  //             <span
-  //               key={i}
-  //               className={[styles.tag, styles.tag1].join(" ")}
-  //             >
-  //               {v}
-  //             </span>
-  //           );
-  //         })}
-  //       </div>
-  //       <div className={styles.price}>
-  //         <span className={styles.priceNum}>{item.price}</span> 元/月
-  //       </div>
-  //     </div>
-  //   </div>
-  //   })
-  // }
 
   // 可视区域渲染
   rowRenderer = ({
@@ -107,6 +72,8 @@ export default class Houselist extends Component {
   }) => {
     // 通过索引获取每条数据
     let house = this.state.list[index];
+    // console.log(house);
+    
     // house滑下去可能会undefined 报错  因为数据渲染较慢 还没有完成  需要判断
     if (!house) {
       return (
@@ -116,7 +83,15 @@ export default class Houselist extends Component {
       );
     } else {
       return (
-        <div key={key} style={style} className={styles.house}>
+        // 每一个房屋数据 绑定 点击跳转事件并将id传过去
+        <div 
+        key={key} 
+        style={style} 
+        className={styles.house}
+        onClick={()=>{
+          this.props.history.push('/detail/'+house.houseCode)
+        }}
+        >
           <div className={styles.imgWrap}>
             <img
               className={styles.img}
@@ -173,7 +148,7 @@ export default class Houselist extends Component {
         count: res.data.body.count,
         list: [...this.state.list, ...res.data.body.list], //合并数组
       });
-      resolve(); //返回
+      resolve(); //返回  **必须**
     });
   };
   render() {
