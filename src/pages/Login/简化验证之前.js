@@ -8,14 +8,27 @@ import NavHeader from "../../components/NavHeader";
 import styles from "./index.module.css";
 import { API } from "../../utils/api";
 // 导入 withFromik 进行表单效验
-import { withFormik, Form, Field, ErrorMessage } from "formik";
+import { withFormik } from "formik";
 // 导入yup   * as 导入所有并取名字 Yup
 import * as Yup from "yup";
-import{setToken} from '../../utils/token'
+console.log("Yup新版本有bug开头一定要加.string()才能生效", Yup);
+// 验证规则：
+// const REG_UNAME = /^[a-zA-Z_\d]{5,8}$/
+// const REG_PWD = /^[a-zA-Z_\d]{5,12}$/
+
 class Login extends Component {
   render() {
-    // console.log("login的props", this.props);
-    // Form, Field, ErrorMessage 替换form input标签 和错误提示
+    // values---数据
+    // handleChange 自带实现赋值  ---onchange对应的函数
+    // handleSubmit 表单提交事件 内部实现阻止默认跳转行为
+    let {
+      errors,
+      handleSubmit,
+      handleChange,
+      values: { username, password },
+    } = this.props;
+    console.log("login的props", this.props);
+
     return (
       <div className={styles.root}>
         {/* 顶部导航 */}
@@ -24,23 +37,24 @@ class Login extends Component {
 
         {/* 登录表单 */}
         <WingBlank>
-          <Form>
+          <form onSubmit={handleSubmit}>
             <div className={styles.formItem}>
               {/* value+onChange */}
-              <Field
+              <input
+                value={username}
+                onChange={handleChange}
                 className={styles.input}
                 name="username"
                 placeholder="请输入账号"
               />
             </div>
             {/* 长度为5到8位，只能出现数字、字母、下划线 */}
-            <ErrorMessage
-              className={styles.error}
-              name="username"//提示对应错误字段
-              component="div"
-            />
+           {errors.username?<div className={styles.error}>{errors.username}</div>:''}
+            
             <div className={styles.formItem}>
-              <Field
+              <input
+                value={password}
+                onChange={handleChange}
                 className={styles.input}
                 name="password"
                 type="password"
@@ -48,19 +62,14 @@ class Login extends Component {
               />
             </div>
             {/* 长度为5到12位，只能出现数字、字母、下划线 */}
-            <ErrorMessage
-              className={styles.error}
-              name="password"
-              component="div"
-            />
+            {errors.password?<div className={styles.error}>{errors.password}</div>:''}
             <div className={styles.formSubmit}>
               {/* submit 对应onSubmmit方法 */}
               <button className={styles.submit} type="submit">
                 登 录
               </button>
             </div>
-          </Form>
-
+          </form>
           <Flex className={styles.backHome}>
             <Flex.Item>
               <Link to="/registe">还没有账号，去注册~</Link>
@@ -78,21 +87,23 @@ export default withFormik({
     //相当于配置表单数据 state  原有state到这里
     return { username: "", password: "" };
   },
-  // 表单提交   两个参数 values   obj {prpps, XXX,XXX,...}
-  handleSubmit: async (values, { props }) => {
+  // 表单提交   两个参数 values   obj {}
+  handleSubmit: async (values, { setSubmitting }) => {
     // 内部实现阻止默认跳转行为
     let { username, password } = values;
     let res = await API.post("/user/login", { username, password });
-    // console.log("登录结果", res.data);
+    console.log("登录结果", res.data);
     if (res.data.status === 200) {
-      // 调用封装的token
-      setToken(res.data.body.token); //存入缓存
-      Toast.success("登陆成功~~", 1);
-      // props.history.push('/home/profile')//跳转到用户 
-      props.history.go(-1)//应该 跳转到上一页 及正在浏览的
+      localStorage.setItem("my-token", res.data.body.token); //存入缓存
+      Toast.success("登陆成功~~", 2);
     } else {
       Toast.fail("登录失败~~", 2);
     }
+    //
+    // setTimeout(() => {
+    //   alert(JSON.stringify(values, null, 2));
+    //   setSubmitting(false);
+    // }, 1000);
   },
   // 效验  validationSchema:Yup.Object().shap({}) 规定写法   版本有问题
   validationSchema: Yup.object().shape({
