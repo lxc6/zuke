@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css"
 // 在入口引入antd的样式
-import "antd-mobile/dist/antd-mobile.css"
+//  按需加载打包配置好后 移除样式
+// import "antd-mobile/dist/antd-mobile.css"
 // 引入字体图标
 import "./assets/fonts/iconfont.css"
 import App from "./App";
