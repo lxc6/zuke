@@ -58,8 +58,8 @@ const labelStyle = {
 
 export default class HouseDetail extends Component {
   state = {
+    isplay:false,
     isLoading: false,
-    isplay: false,
     houseInfo: {
       // 房屋图片
       houseImg: [],
@@ -107,6 +107,10 @@ export default class HouseDetail extends Component {
     console.log(res.data.body);
     this.setState({
       houseInfo: res.data.body,
+    },()=>{//保证数据isplay是最新的
+      this.setState({
+        isplay: true,
+      });
     });
 
     let { community, coord } = res.data.body;
@@ -197,9 +201,10 @@ export default class HouseDetail extends Component {
         <div className={styles.slides}>
           {!isLoading ? (
             <Carousel
+            // autoplay有bug 需要单独设置 
               autoplay={this.state.isplay}
               infinite
-              autoplayInterval={5000}
+              // autoplayInterval={5000}
             >
               {this.renderSwipers()}
             </Carousel>

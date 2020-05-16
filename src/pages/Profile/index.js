@@ -6,7 +6,7 @@ import { Grid, Button, Modal } from "antd-mobile";
 import { baseURL } from "../../utils/baseURL";
 
 import styles from "./index.module.css";
-import { isLogin, getToken, delToken } from "../../utils/token";
+import { isAuth, getToken, delToken } from "../../utils/token";
 import { API } from "../../utils/api";
 
 // 菜单数据
@@ -27,7 +27,7 @@ const DEFAULT_AVATAR = baseURL + "/img/profile/avatar.png";
 
 export default class Profile extends Component {
   state = {
-    isLogin: isLogin(),
+    isAuth: isAuth(), //判断是否登陆
     userInfo: {
       avatar: "",
       nickname: "",
@@ -38,7 +38,7 @@ export default class Profile extends Component {
   }
   // 获取用户信息
   getUserInfo = async () => {
-    if (!this.state.isLogin) {
+    if (!this.state.isAuth) {
       return; //没有登陆不执行
     }
     // let res = await API.get("/user", {
@@ -47,12 +47,11 @@ export default class Profile extends Component {
     // 设置请求拦截 后
     let res = await API.get("/user");
     console.log("用户信息", res);
+    if (!res.data.body) {
+      return;
+    }
     this.setState({
-      // userInfo: {
-      //   avatar: res.data.body.avatar,
-      //   nickname: res.data.body.nickname,
-      // },
-      userInfo:res.data.body
+      userInfo: res.data.body,
     });
   };
   // 退出登录 弹窗 Modal
@@ -74,7 +73,7 @@ export default class Profile extends Component {
             delToken(); //清除token
             this.setState({
               //还原页面数据
-              isLogin: false,
+              isAuth: false,
               userInfo: {
                 avatar: "",
                 nickname: "",
@@ -113,7 +112,7 @@ export default class Profile extends Component {
             <div className={styles.user}>
               <div className={styles.name}>{nickname || "游客"}</div>
               {/* 判断登陆与否 登录后展示： */}
-              {this.state.isLogin ? (
+              {this.state.isAuth ? (
                 // 登录了  <>包裹不显示
                 <>
                   <div className={styles.auth}>

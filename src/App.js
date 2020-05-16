@@ -5,8 +5,12 @@ import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import Home from "./pages/Home";
 import Citylist from "./pages/Citylist";
 import Map from "./pages/Map";
-import HouseDetail from './pages/HouseDetail'
-import Login from './pages/Login'
+import HouseDetail from "./pages/HouseDetail";
+import Login from "./pages/Login";
+import AuthRoute from "./components/AuthRoute";
+import Rent from "./pages/Rent";
+import RentAdd from "./pages/Rent/Add";
+import RentSearch from "./pages/Rent/Search";
 export default class App extends Component {
   render() {
     return (
@@ -20,7 +24,7 @@ export default class App extends Component {
             exact
             path="/"
             render={(props) => {
-              return <Redirect to="/home/default"></Redirect>;//强制跳转
+              return <Redirect to="/home/default"></Redirect>; //强制跳转
             }}
           ></Route>
           {/* 主页 */}
@@ -32,7 +36,16 @@ export default class App extends Component {
           {/* 房子详情  :id 路由参数*/}
           <Route exact path="/detail/:id" component={HouseDetail}></Route>
           {/* 登录页面 */}
-          <Route exact path='/login' component={Login}></Route>
+          <Route exact path="/login" component={Login}></Route>
+          {/* 三个页面需要鉴权 
+            /rent 房屋管理  
+            /rent/add  发布房屋
+            /rent/search 小区搜索
+            */}
+          {/* 房屋管理页面 */}
+          <AuthRoute exact={true} path={"/rent"} Pages={Rent}></AuthRoute>
+          <AuthRoute exact={true} path={"/rent/add"} Pages={RentAdd}></AuthRoute>
+          <AuthRoute exact={true} path={"/rent/search"} Pages={RentSearch}></AuthRoute>
         </div>
       </Router>
     );

@@ -11,7 +11,7 @@ let delToken = () => {
 };
 
 // 判断登陆
-let isLogin = () => {
+let isAuth = () => {
   return !!getToken(); //非非 返回 布尔值
 };
-export { getToken, setToken, delToken, isLogin };
+export { getToken, setToken, delToken, isAuth };

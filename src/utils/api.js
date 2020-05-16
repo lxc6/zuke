@@ -17,6 +17,9 @@ API.interceptors.request.use(
     ) {
       // config.headers.名字(接口定的)=token
       config.headers.authorization = getToken();
+    } else if (config.url.startsWith("/houses/image")) {
+      config.headers.authorization = getToken();
+      config.headers["Content-type"] = "multipart/form-data";
     }
     return config;
   }
